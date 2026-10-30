@@ -487,6 +487,6 @@ Somos um espaço inclusivo. Tratamos todos com respeito e valorizamos contribui�
 
 ---
 
-**Criado com ❤️ usando [Claude Code](https://claude.com/claude-code)**
+**criado com ❤️ usando [Claude Code](https://claude.com/claude-code)**
 
 © 2024 Project CC. Licença MIT.
