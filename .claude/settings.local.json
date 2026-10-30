@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem *)"
+    ]
+  },
+  "enabledPlugins": {
+    "frontend-design@anthropic-plugin-directory": true
+  }
+}
