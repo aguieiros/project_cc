@@ -1,34 +1,62 @@
-# Projeto Next.js 16
+# 🎯 Project CC - Next.js 16 Starter Kit
 
-Aplicação web moderna e produção-ready construída com **Next.js 16**, **React 19**, **TypeScript** e **TailwindCSS 4**. Implementa arquitetura Server-First com App Router, validação com **React Hook Form + Zod**, e componentes UI reutilizáveis com **shadcn/ui**.
+[![Next.js 16](https://img.shields.io/badge/Next.js-16.4-black?style=flat-square&logo=next.js)](https://nextjs.org)
+[![React 19](https://img.shields.io/badge/React-19.3-blue?style=flat-square&logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![TailwindCSS 4](https://img.shields.io/badge/TailwindCSS-4-38B2AC?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-## 🚀 Começando
+Sistema web moderno, produção-ready e altamente escalável construído com as tecnologias mais recentes do ecossistema JavaScript/React. 
+
+Implementa **Server-First Architecture** com App Router, validação robusta com React Hook Form + Zod, e componentes UI reutilizáveis com shadcn/ui. Perfeito como starter kit para projetos empresariais, SaaS, dashboards e aplicações web complexas.
+
+### ✨ Características
+
+- ⚡ **Server-First Architecture** — Performance otimizada com Server Components
+- 🎨 **Design System Ready** — shadcn/ui + TailwindCSS 4 (Turbopack)
+- 📝 **Form Validation** — React Hook Form + Zod para validação type-safe
+- 🔒 **Type Safety** — TypeScript 5 em 100% do código
+- 🚀 **Produção Ready** — ESLint, configuração otimizada, best practices
+- 📦 **Moderna Stack** — Next.js 16, React 19, TailwindCSS 4
+- 🔄 **CI/CD Ready** — Deploy fácil no Vercel (ou qualquer plataforma Node.js)
+
+## 🚀 Quick Start
 
 ### Pré-requisitos
-- Node.js 18+
-- npm (ou yarn/pnpm/bun)
+- **Node.js 18+** ([Download](https://nodejs.org))
+- **npm**, yarn, pnpm ou bun (qualquer gerenciador de pacotes)
+- **Git** (para clonar o repositório)
 
-### Instalação & Desenvolvimento
+### 1️⃣ Clonar & Instalar
 
 ```bash
+# Clonar repositório
+git clone https://github.com/aguieiros/project_cc.git
+cd project_cc
+
 # Instalar dependências
 npm install
+```
 
-# Rodar servidor local (porta 3000)
+### 2️⃣ Desenvolvimento Local
+
+```bash
 npm run dev
 ```
 
-Abra [http://localhost:3000](http://localhost:3000) no navegador.
+Abra **[http://localhost:3000](http://localhost:3000)** no navegador. A página recarrega automaticamente ao editar arquivos.
 
-### Build & Produção
+### 3️⃣ Build & Produção
 
 ```bash
-# Build otimizado
+# Criar build otimizado
 npm run build
 
-# Rodar em produção localmente
+# Testar build localmente
 npm start
 ```
+
+Acesse [http://localhost:3000](http://localhost:3000) para testar a build de produção.
 
 ## 📦 Tech Stack
 
@@ -102,11 +130,43 @@ npm run lint         # Executar ESLint
 - Compartilhe tipos globais em `types/` com Zod schemas quando apropriado
 
 ### Componentes React
-- **Server Components por padrão** — São mais eficientes e seguras
-- Adicione `'use client'` apenas quando precisar de:
-  - Hooks (useState, useEffect, useContext, etc)
-  - Event listeners (onClick, onChange, etc)
-  - Browser APIs (localStorage, window, etc)
+
+**Server Components por padrão** — São mais eficientes, seguras e reduzem tamanho do bundle JavaScript.
+
+**Quando adicionar `'use client'`** (apenas quando necessário):
+```typescript
+// ✅ USE CLIENT QUANDO:
+- Usar hooks (useState, useEffect, useContext, etc)
+- Adicionar event listeners (onClick, onChange, etc)
+- Acessar Browser APIs (localStorage, window, navigator, etc)
+- Implementar cliente-side interatividade
+
+// ❌ NÃO USE QUANDO:
+- Buscar dados do servidor (use Server Components)
+- Chamar banco de dados (use Server Actions)
+- Usar credenciais/secrets (ficam expostas!)
+```
+
+**Exemplo - Server Component (padrão):**
+```tsx
+// app/posts/page.tsx
+export default async function Posts() {
+  const posts = await fetch('api/posts') // ✅ Seguro no servidor
+  return <div>{/* render posts */}</div>
+}
+```
+
+**Exemplo - Client Component (quando necessário):**
+```tsx
+// components/Counter.tsx
+'use client'
+import { useState } from 'react'
+
+export default function Counter() {
+  const [count, setCount] = useState(0) // ✅ Hook necessário
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```
 
 ### Styling
 - **Apenas TailwindCSS** — sem CSS modules, styled-components ou CSS inline
@@ -114,9 +174,69 @@ npm run lint         # Executar ESLint
 - Classes reutilizáveis podem ir em `@apply` no `globals.css` (com moderação)
 
 ### Server Actions & Formulários
-- Coloque Server Actions em `actions/`
-- Combine com React Hook Form + Zod para validação robusta
-- Sempre valide dados no servidor (nunca confie apenas na validação do client)
+
+Coloque Server Actions em `actions/` e combine com React Hook Form + Zod para validação robusta.
+
+**Sempre valide dados no servidor** — nunca confie apenas na validação do client!
+
+**Exemplo - Schema Zod:**
+```typescript
+// types/user.ts
+import { z } from 'zod'
+
+export const createUserSchema = z.object({
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
+  email: z.string().email('Email inválido'),
+  password: z.string().min(8, 'Senha deve ter no mínimo 8 caracteres'),
+})
+
+export type CreateUserInput = z.infer<typeof createUserSchema>
+```
+
+**Exemplo - Server Action:**
+```typescript
+// actions/user.ts
+'use server'
+import { createUserSchema } from '@/types/user'
+
+export async function createUser(data: unknown) {
+  // Validar dados (type-safe!)
+  const validated = createUserSchema.parse(data)
+  
+  // Chamar banco de dados
+  const user = await db.user.create({ data: validated })
+  
+  return { success: true, user }
+}
+```
+
+**Exemplo - Client Form:**
+```tsx
+// components/CreateUserForm.tsx
+'use client'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createUserSchema } from '@/types/user'
+import { createUser } from '@/actions/user'
+
+export default function CreateUserForm() {
+  const { register, handleSubmit } = useForm({
+    resolver: zodResolver(createUserSchema),
+  })
+
+  return (
+    <form onSubmit={handleSubmit(async (data) => {
+      const result = await createUser(data)
+      if (result.success) alert('Usuário criado!')
+    })}>
+      <input {...register('name')} placeholder="Nome" />
+      <input {...register('email')} placeholder="Email" />
+      <input {...register('password')} type="password" />
+      <button type="submit">Criar Usuário</button>
+    </form>
+  )
+}
+```
 
 ## 🔧 Configuração
 
@@ -164,44 +284,209 @@ chore/task-description  # Tarefas de manutenção
 4. Abra Pull Request com descrição clara
 5. Aguarde review e merge
 
-## ⚠️ Common Gotchas
+## ⚠️ Troubleshooting & Common Gotchas
 
-- **`revalidatePath()` e `revalidateTag()`**: só funcionam dentro de Server Actions ou Route Handlers, não em componentes regulares
-- **Middleware**: deve ficar em `middleware.ts` na **raiz do projeto**, não dentro de `app/`
-- **Supabase em Dev**: no server use `createServerClient(cookies)`, no client use `createBrowserClient()`
-- **Imagens externas**: precisam estar autorizadas em `next.config.ts` via `remotePatterns`
-- **Dados sensíveis**: nunca exponha no client — use Server Actions para operações com banco/APIs
+### 🔄 Revalidação de Cache
 
-## 🚢 Deploy
+❌ **ERRADO:** Usar `revalidatePath()` em um componente
+```typescript
+// ❌ Isso não funciona!
+export default function Page() {
+  revalidatePath('/') // ERROR: revalidatePath only works in Server Actions
+}
+```
 
-Pronto para produção? Deploy automático no [Vercel](https://vercel.com) (criadores do Next.js):
+✅ **CORRETO:** Usar em Server Action
+```typescript
+// ✅ Funciona!
+'use server'
+export async function updatePost(id: string) {
+  await db.post.update({ where: { id } })
+  revalidatePath(`/posts/${id}`)
+}
+```
 
-1. Push para GitHub
-2. Conecte o repositório no Vercel
-3. Configure variáveis de ambiente
-4. Deploy automático em cada push para `main`
+### 🛣️ Middleware
 
-**Alternativas**: Netlify, Railway, AWS Amplify, ou qualquer plataforma com suporte a Node.js.
+❌ **ERRADO:** `middleware.ts` dentro de `app/`
+```
+app/
+  middleware.ts  ❌
+```
 
-[Saiba mais sobre deploy no Vercel](https://nextjs.org/docs/app/building-your-application/deploying)
+✅ **CORRETO:** `middleware.ts` na raiz do projeto
+```
+projeto-1/
+  middleware.ts  ✅
+  app/
+```
 
-## 📚 Documentações Importantes
+### 🖼️ Imagens Externas
 
-- [Next.js 16 Docs](https://nextjs.org/docs)
-- [React 19 Documentation](https://react.dev)
-- [TailwindCSS 4](https://tailwindcss.com/docs)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [React Hook Form](https://react-hook-form.com/)
-- [Zod Validation](https://zod.dev/)
-- [shadcn/ui Components](https://ui.shadcn.com/docs)
+```typescript
+// next.config.ts
+export default {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+      },
+    ],
+  },
+}
+```
+
+### 🔐 Dados Sensíveis
+
+```typescript
+// ❌ NUNCA faça isso!
+export default function Page() {
+  const apiKey = process.env.STRIPE_SECRET_KEY // Exposto no client!
+}
+
+// ✅ Use Server Actions
+'use server'
+export async function processPayment(amount: number) {
+  const apiKey = process.env.STRIPE_SECRET_KEY // Seguro no servidor
+  // processar pagamento...
+}
+```
+
+### 📦 Supabase Client
+
+```typescript
+// lib/supabase-server.ts
+'use server'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+
+export async function getSupabaseServer() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    { cookies }
+  )
+}
+```
+
+```typescript
+// lib/supabase-client.ts
+'use client'
+import { createBrowserClient } from '@supabase/ssr'
+
+export const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+)
+
+## 🚢 Deployment
+
+### 🔷 Vercel (Recomendado)
+
+[Vercel](https://vercel.com) é criada pelo time do Next.js e oferece a melhor integração:
+
+1. **Fazer push para GitHub** (já feito!)
+2. **Criar conta no Vercel** e conectar GitHub
+3. **Importar projeto** — Vercel detecta Next.js automaticamente
+4. **Configurar variáveis de ambiente** no Vercel Dashboard
+5. **Deploy automático** em cada push para `main`
+
+[📖 Guia completo de deployment no Vercel](https://nextjs.org/docs/app/building-your-application/deploying)
+
+### 🟢 Alternativas
+
+| Plataforma | Tipo | Custo | Melhor para |
+|-----------|------|-------|-----------|
+| **Vercel** | Serverless | Freemium | Next.js (melhor integração) |
+| **Railway** | PaaS | Pay-as-you-go | Começar rápido, ótima DX |
+| **Netlify** | Serverless | Freemium | Sites estáticos/dinâmicos |
+| **AWS Amplify** | Managed | Freemium | Escala corporativa |
+| **Render** | PaaS | Freemium | Simples e confiável |
+
+### Variáveis de Ambiente em Produção
+
+Exemplo para Vercel:
+```bash
+NEXT_PUBLIC_API_URL=https://api.seu-dominio.com
+DATABASE_URL=postgresql://user:pass@host:5432/dbname
+STRIPE_SECRET_KEY=sk_live_xxxxx
+JWT_SECRET=seu-secret-muito-seguro-aqui
+```
+
+⚠️ **NUNCA commit `.env.local`** — use `.env.example` versionado
+
+## 📚 Recursos & Documentações
+
+### 🔗 Documentações Oficiais
+- **[Next.js 16 Docs](https://nextjs.org/docs)** — Guia completo, App Router, deployment
+- **[React 19 Documentation](https://react.dev)** — Aprenda React, hooks, patterns
+- **[TypeScript Handbook](https://www.typescriptlang.org/docs/)** — Type safety em profundidade
+
+### 🎨 Design & Styling
+- **[TailwindCSS 4](https://tailwindcss.com/docs)** — Utility-first CSS framework
+- **[shadcn/ui](https://ui.shadcn.com/docs)** — Componentes reutilizáveis em React
+- **[Heroicons](https://heroicons.com/)** — Ícones de alta qualidade (vai bem com shadcn)
+
+### 🛠️ Ferramentas & Validação
+- **[React Hook Form](https://react-hook-form.com/)** — Forms performáticas
+- **[Zod](https://zod.dev/)** — TypeScript-first schema validation
+- **[@hookform/resolvers](https://github.com/react-hook-form/resolvers)** — Integradores Zod + React Hook Form
+
+### 🌐 Integração com Serviços
+- **[Supabase Docs](https://supabase.com/docs)** — PostgreSQL + Auth + Realtime
+- **[Stripe Docs](https://stripe.com/docs)** — Pagamentos online
+- **[Auth0 Docs](https://auth0.com/docs)** — Autenticação empresarial
+
+### 📖 Blogs & Aprendizado
+- **[Vercel Blog](https://vercel.com/blog)** — News sobre Next.js, performance, patterns
+- **[Kent C. Dodds](https://kentcdodds.com/)** — React expert, artigos profundos
+- **[Lee Robinson](https://leerob.io/)** — Next.js specialist, tutorials
+
+## 💡 Próximos Passos (Após Clonar)
+
+```bash
+# 1. Instalar dependências
+npm install
+
+# 2. Copiar exemplo de env
+cp .env.example .env.local  # (criar se não existir)
+
+# 3. Iniciar desenvolvimento
+npm run dev
+
+# 4. Criar primeira feature em nova branch
+git checkout -b feat/minha-primeira-feature
+
+# 5. Fazer mudanças, commit, push, PR
+```
 
 ## 📞 Suporte & Contribuição
 
-Para dúvidas ou problemas:
-- Consulte as documentações acima
-- Abra uma issue no repositório
-- Siga as convenções de código descritas acima
+Dúvidas ou quer contribuir?
+
+1. **Consulte as documentações** listadas acima (resolvem 90% dos problemas)
+2. **Abra uma issue** no [repositório](https://github.com/aguieiros/project_cc/issues)
+3. **Siga as convenções** de código descritas acima
+4. **Faça um Pull Request** — siga o Git Workflow
+
+### Código de Conduta
+Somos um espaço inclusivo. Tratamos todos com respeito e valorizamos contribuições de qualquer nível.
 
 ---
 
-**Status**: Projeto em desenvolvimento ✨
+## 📊 Status do Projeto
+
+| Componente | Status | Notas |
+|-----------|--------|-------|
+| **Setup Inicial** | ✅ Completo | Next.js 16, React 19, TypeScript |
+| **UI Components** | 🟡 Em Desenvolvimento | shadcn/ui pronto, adicione conforme necessário |
+| **Autenticação** | ⏳ Planejado | Integrar Auth0, Supabase ou NextAuth |
+| **Banco de Dados** | ⏳ Planejado | Supabase recomendado |
+| **Testes** | ⏳ Planejado | Vitest + Testing Library |
+
+---
+
+**criado com ❤️ usando [Claude Code](https://claude.com/claude-code)**
+
+© 2024 Project CC. Licença MIT.
