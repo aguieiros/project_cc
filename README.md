@@ -6,7 +6,7 @@
 [![TailwindCSS 4](https://img.shields.io/badge/TailwindCSS-4-38B2AC?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-Aplicação web moderna, produção-ready e altamente escalável construída com as tecnologias mais recentes do ecossistema JavaScript/React. 
+Sistema web moderno, produção-ready e altamente escalável construído com as tecnologias mais recentes do ecossistema JavaScript/React. 
 
 Implementa **Server-First Architecture** com App Router, validação robusta com React Hook Form + Zod, e componentes UI reutilizáveis com shadcn/ui. Perfeito como starter kit para projetos empresariais, SaaS, dashboards e aplicações web complexas.
 
